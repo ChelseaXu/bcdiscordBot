@@ -1,0 +1,14 @@
+{
+  "name": "newCryptoDetector",
+  "version": "1.0.0",
+  "description": "bot for detecting new crypto currencies on the exchange",
+  "main": "bot.js",
+  "repository": "git@github.com:ChelseaXu/cryptoDiscordBot.git",
+  "author": "Tyler Laporte, Chelsea Xu",
+  "license": "MIT",
+  "dependencies": {
+    "discord.io": "github:woor/discord.io#gateway_v6",
+    "discord.js": "^11.2.1",
+    "winston": "^2.4.0"
+  }
+}
