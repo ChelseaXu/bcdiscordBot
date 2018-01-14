@@ -1,8 +1,8 @@
-var Discord = require('discord.io');
+const Discord = require('discord.io');
 
-var logger = require('winston');
-var auth = require('./auth.json');
-
+const logger = require('winston');
+const auth = require('./auth.json');
+const bittrexExchange = require('./exchanges/bittrexExchange');
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -11,22 +11,24 @@ logger.add(logger.transports.Console, {
 });
 logger.level = 'debug';
 
+const subscribedChannels = new Set();
+const exchanges = new Set([bittrexExchange]);
 
 // Initialize Discord Bot
 var bot = new Discord.Client({
     token: auth.token,
     autorun: true
 });
-console.log("bot should be initialized"); 
 
 bot.on('ready', function (evt) {
     logger.info('Connected');
     logger.info('Logged in as: ');
-    console.log("bot is ready");
     logger.info(bot.username + ' - (' + bot.id + ')');
+    for(let exchange of exchanges){
+       
+    }
 });
 
-console.log("bot should message");
 bot.on('message', function (user, userID, channelID, message, evt) {
     // Our bot needs to know if it needs to execute a command
     // for this script it will listen for messages that will start with `!`
@@ -38,13 +40,30 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
         switch(cmd) {
             // !ping
-            case 'ping':
-                bot.sendMessage({ to: channelID, message: 'Pong!' });
+            case 'subscribe':
+                subscribedChannels.add(channelID);
+                bot.sendMessage({ to: channelID, message: 'Subcribed to new market messages.' });
             break;
             default:
                 bot.sendMessage({ to: channelID, message: 'Unknown command.' });
         }
     }
+});
+
+let alertNewMarkets = function(newMarkets, exchange){
+    for(let newMarket of newMarkets){
+        for(let channelID of subscribedChannels){
+            let newMarketMessage = 'New Market added to ' + exchange.exchangeName + '.\n' + exchange.exchangeMarketUrlPrefix + newMarket;
+            bot.sendMessage({ to: channelID, message: newMarketMessage });
+        }
+    }
 }
 
-)
+let checkForNewMarkets = function(){
+    for(let exchange of exchanges){
+        console.log('test');
+        exchange.searchForNewMarkets(alertNewMarkets);
+    }
+}
+
+let interval = setInterval(checkForNewMarkets, 30000);
