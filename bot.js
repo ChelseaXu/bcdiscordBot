@@ -3,6 +3,7 @@ const Discord = require('discord.io');
 const logger = require('winston');
 const auth = require('./auth.json');
 const bittrexExchange = require('./exchanges/bittrexExchange');
+const binanceExchange = require('./exchanges/binanceExchange');
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -12,7 +13,7 @@ logger.add(logger.transports.Console, {
 logger.level = 'debug';
 
 const subscribedChannels = new Set();
-const exchanges = new Set([bittrexExchange]);
+const exchanges = new Set([bittrexExchange, binanceExchange]);
 
 // Initialize Discord Bot
 var bot = new Discord.Client({
